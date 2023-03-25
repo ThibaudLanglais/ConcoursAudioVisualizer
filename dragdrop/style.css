@@ -1,0 +1,275 @@
+* {
+  margin: 0;
+  color: var(--prim);
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+  outline: none;
+  box-sizing: border-box;
+}
+
+body {
+  height: 100vh;
+  max-height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  position: relative;
+  --prim: #fff;
+  --sec: #111;
+}
+
+#bg {
+  position: fixed;
+  inset: 0;
+  object-fit: cover;
+  transform: scale(1.01);
+  animation: hueRotate 10s infinite linear;
+  z-index: -1;
+}
+
+h1{
+  font-family: 'Titan One', cursive;
+  font-size: clamp(3rem, 10vw ,5rem);
+  letter-spacing: 5px;
+  mix-blend-mode: difference;
+  opacity: 0.2;
+  padding: 20px;
+  position: absolute;
+}
+
+h1 *{
+  font-family: inherit;
+  line-height: clamp(0.2, 2vw, 0.3);
+}
+
+h1 > span {
+  font-size: 2rem;
+}
+
+h1 > span:last-child{
+  display: block;
+  text-transform: uppercase;
+  font-size: clamp(2.5rem, 7.3vw ,3.5rem);
+}
+
+.ready #content {
+  opacity: 1;
+}
+
+#content {
+  transition: all 0.3s linear;
+  opacity: 0;
+  position: absolute;
+  background-color: var(--sec);
+  display: flex;
+  flex-direction: column;
+  padding: 2px;
+  overflow: hidden;
+}
+
+#search {
+  width: 100%;
+  border: 1px solid var(--sec);
+  padding: 5px;
+  color: var(--sec);
+}
+
+#results {
+  margin-top: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.result {
+    cursor: pointer;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+.result:hover{
+    filter: brightness(1.1);
+    background-color: #0a0a0a;
+}
+
+.result .info {
+  overflow: hidden;
+}
+
+.result:hover .title {
+  animation-name: marquis;
+  animation-duration: 5s;
+  animation-iteration-count: infinite;
+}
+
+.cover {
+  width: 35px;
+  height: 35px;
+  object-fit: cover;
+}
+
+.info p {
+  white-space: nowrap;
+  line-height: 1.2;
+}
+.title {
+  font-size: 13px;
+  font-weight: bold;
+}
+.artist {
+  font-size: 12px;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 2px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: var(--prim);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #0c8776;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #065d52;
+}
+
+#player.hidden {
+  height: 0;
+  margin: 0;
+  padding: 0 10px;
+  opacity: 0;
+}
+
+#player {
+  transition: all 0.3s linear;
+  margin-top: 10px;
+  padding: 10px;
+  border-top: 1px solid var(--prim);
+}
+
+#player .wrapper {
+  display: flex;
+  flex-direction: column;
+}
+#player .wrapper .time {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+}
+
+#top-bar{
+  margin-bottom: 5px;
+  font-size: 10px;
+  background-color: var(--prim);
+  display: flex;
+}
+
+#top-bar * {
+  background-color: var(--prim);
+  display: inline-block;
+  color: var(--sec);
+}
+
+
+.currently-playing {
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.currently-playing.active > span {
+    animation-name: marquis;
+    animation-duration: 5s;
+    animation-iteration-count: infinite;
+}
+
+#menu {
+  transition: all 0.5s ease-in-out;
+  opacity: 0;
+  pointer-events: none;
+  position: fixed;
+  z-index: 999;
+  inset: 0;
+  background: none;
+  padding: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#menu.active{
+  opacity: 1;
+  pointer-events: all;
+}
+
+#menu * {
+  color: var(--sec);
+}
+
+#menu h2 {
+  font-family: 'Titan One', cursive;
+}
+
+#menu::before{
+  content: '';
+  position: absolute;
+  width: calc(100% - 40px);
+  height: calc(100% - 40px);
+  border: 1px solid var(--prim);
+}
+
+#menu .menu-content {
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5vh;
+}
+
+#menu button{
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+#menu button img {
+  transition: all .3s;
+  width: 50px;
+  height: 50px;
+}
+
+#menu button:hover img {
+  transform: translateY(-10px) rotate(90deg);
+}
+
+@keyframes marquis {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-90%);
+  }
+}
+@keyframes hueRotate {
+  from {
+    filter: hue-rotate(0deg);
+  }
+  to {
+    filter: hue-rotate(360deg);
+  }
+}

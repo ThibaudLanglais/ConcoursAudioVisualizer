@@ -7,7 +7,7 @@ pointLight.position.set(1, 1.5, -10);
 
 const frustumValue = 500;
 
-var container, camera, scene, renderer, mixer, clips, raycaster, mouse, ipod;
+var container, camera, scene, renderer, mixer, clips, raycaster, mouse, ipod, corners = {};
 
 container = document.createElement("div");
 document.body.appendChild(container);
@@ -38,33 +38,20 @@ loader.load("ipod.glb", function (gltf) {
     var topLeft = gltf.scene.children[0].children.filter(el => el.userData?.name == "TopLeft")[0];
     var bottomLeft = gltf.scene.children[0].children.filter(el => el.userData?.name == "BottomLeft")[0];
     var bottomRight = gltf.scene.children[0].children.filter(el => el.userData?.name == "BottomRight")[0];
-    if(topLeft && bottomLeft && bottomRight){
-      topLeft = WorldToScreenCoordinates(topLeft);
-      bottomLeft = WorldToScreenCoordinates(bottomLeft);
-      bottomRight = WorldToScreenCoordinates(bottomRight);
-      const contentDiv = document.querySelector('#content');
-      contentDiv.style.left = `${topLeft.x}px`;
-      contentDiv.style.top = `${topLeft.y}px`;
-      contentDiv.style.width = `${bottomRight.x - topLeft.x}px`;
-      contentDiv.style.height = `${bottomLeft.y - topLeft.y}px`;
-    }
-    document.body.classList.add('ready')
+
+    corners.topLeft = topLeft;
+    corners.bottomLeft = bottomLeft;
+    corners.bottomRight = bottomRight;
+
+    setContentDiv(corners, camera);
   })
 });
 
-renderer = new THREE.WebGLRenderer({
-  antialias: true,
-  alpha: true
-});
+renderer = new THREE.WebGLRenderer({alpha: true});
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1;
 renderer.outputEncoding = THREE.sRGBEncoding;
 container.appendChild(renderer.domElement);
-
-var pmremGenerator = new THREE.PMREMGenerator(renderer);
-pmremGenerator.compileEquirectangularShader();
 
 window.addEventListener("resize", onWindowResize, false);
 
@@ -81,28 +68,38 @@ function onClick(event) {
   var intersects = raycaster.intersectObjects(scene.children, true);
 
   if (intersects.length > 0) {
-    console.log("Intersection:", intersects[0]);
+    const objectName = intersects[0].object.userData?.name;
+    if(objectName == "Forward"){
+      playTrack(currentTrack.next);
+    }else if(objectName == "Backward"){
+      playTrack(oldTrack);
+    }else if(objectName == "PlayPause"){
+      playPause();
+    }else if(objectName == "Menu"){
+      openMenu();
+    }
   }
 }
 
 function onWindowResize() {
+  renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(window.innerWidth, window.innerHeight);
+
+  camera.left = innerWidth / - frustumValue;
+  camera.right = innerWidth / frustumValue;
+  camera.top = innerHeight / frustumValue;
+  camera.bottom = innerHeight / - frustumValue;
+  camera.updateProjectionMatrix();
+
+  setContentDiv(corners, camera);
 }
 
 const clock = new THREE.Clock();
 function render() {
+  if(menu.classList.contains('active')) return;
   mixer?.update(clock.getDelta());
   ipod && camera.lookAt(ipod.position);
   renderer.render(scene, camera);
 }
 
 renderer.setAnimationLoop(render);
-
-function WorldToScreenCoordinates(object){
-  var widthHalf = innerWidth / 2, heightHalf = innerHeight / 2;
-  var pos = object.getWorldPosition().clone();
-  pos.project(camera);
-  pos.x = ( pos.x * widthHalf ) + widthHalf;
-  pos.y = - ( pos.y * heightHalf ) + heightHalf;
-  return pos;
-}

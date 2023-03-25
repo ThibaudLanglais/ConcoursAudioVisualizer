@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizer</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Titan+One&display=swap" rel="stylesheet">
+    <script src="functions.js"></script>
+    <script src="index.js" defer></script>
+    <script src="threeLogic.js" type="module"></script>
+</head>
+<body>
+    <div id="menu">
+        <div class="menu-content">
+            <h2>2009'audio visualizer</h2>
+            <p>Soumission au concours</p>
+            <p>Fait par <a href="https://github.com/ThibaudLanglais" target="_blank" title="Lien vers le github de Thibaud Langlais">Thibaud Langlais</a></p>
+            <button title="Fermer le menu"><img src="close.svg" alt="Icone croix"></button>
+        </div>
+    </div>
+    <img src="Gradient.png" id="bg">
+    <h1>2009'<span>audio</span><span>Visualizer</span></h1>
+    <div id="content">
+        <div id="top-bar">
+            <p>Currently playing : </p>
+            <p class="currently-playing">
+                <span>Nothing</span>
+            </p>
+        </div>
+        <form action="#">
+            <input type="text" placeholder="Search a song..." name="" id="search">
+        </form>
+        <div id="results">
+        </div>
+        <div id="player" class="hidden">
+            <div class="wrapper">
+                <input type="range" id="audio-track" min="0" max="1" step="0.01" value="0">
+                <div class="time">
+                    <span id="playing-time">00:00</span>
+                    <span id="duration">00:30</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -9,11 +9,23 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Titan+One&display=swap" rel="stylesheet">
+    <script src="https://e-cdn-files.dzcdn.net/js/min/dz.js"></script>
     <script src="functions.js"></script>
     <script src="index.js" defer></script>
     <script src="threeLogic.js" type="module"></script>
 </head>
 <body>
+    <div id="dz-root"></div>
+    <div id="menu">
+        <div class="menu-content">
+            <h2>2009'audio visualizer</h2>
+            <p>Soumission au concours</p>
+            <p>Fait par <a href="https://github.com/ThibaudLanglais" target="_blank" title="Lien vers le github de Thibaud Langlais">Thibaud Langlais</a></p>
+            <button title="Fermer le menu"><img src="close.svg" alt="Icone croix"></button>
+        </div>
+    </div>
+    <img src="Gradient.png" id="bg">
+    <h1>2009'<span>audio</span><span>Visualizer</span></h1>
     <div id="content">
         <div id="top-bar">
             <p>Currently playing : </p>
@@ -25,13 +37,6 @@
             <input type="text" placeholder="Search a song..." name="" id="search">
         </form>
         <div id="results">
-            <div class="result">
-                <img class="cover" src="cover.jpg" alt="">
-                <div class="info">
-                    <p class="title">Titre de la musique</p>
-                    <p class="artist">Artiste</p>
-                </div>
-            </div>
         </div>
         <div id="player" class="hidden">
             <div class="wrapper">

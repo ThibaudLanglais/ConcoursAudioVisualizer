@@ -1,3 +1,9 @@
+DZ.init({
+    appId: '591724',
+    channelUrl: ""
+});
+
+let spaceRegexp = new RegExp(/ /,"gi");
 const form = document.querySelector('form');
 const resultsDiv = document.getElementById('results');
 const topBarSpan = document.querySelector('.currently-playing span');
@@ -5,28 +11,32 @@ const player = document.getElementById('player');
 const audioDurationSpan = document.getElementById('duration');
 const audioCurrentPlaytimeSpan = document.getElementById('playing-time');
 const audioInputRange = document.getElementById('audio-track');
-
+const menu = document.getElementById('menu');
+const currentlyPlaying = document.querySelector('.currently-playing');
 
 // Variables for audio
 var audioSource = null;
 var analyser = null;
 var x = 0;
-var audio = new Audio();
+let audio = new Audio();
+let data; //Tracks
+let currentTrack, oldTrack;
 var audioDuration;
 var updateTrackInterval;
 audio.crossOrigin = "anonymous";
 
 form.addEventListener('submit', onFormSubmit);
 
+document.querySelector('#menu button').addEventListener('click', () => menu.classList.remove("active"))
+
 
 function onFormSubmit(e) {
     e.preventDefault();
-    const query = e.target.elements.search.value;
+    const query = e.target.elements.search.value.replaceAll(spaceRegexp, "");
+    if(query === "") return;
 
-    queryDeezer(query)
-    .then(res => res.json())
-    .then(res => {
-        const data = filterByKeyValue(res.data, "type", "track");
+    DZ.api(`/search?q=${encodeURIComponent(query)}`, (res) => {
+        data = filterByKeyValue(res.data, "type", "track");
         resultsDiv.innerHTML = "";
         data.forEach((track, i) => {
             track.next = i >= data.length ? data[0] : data[i+1];
@@ -36,13 +46,14 @@ function onFormSubmit(e) {
             result.addEventListener('click', () => playTrack(track));
             resultsDiv.append(result);
         })
-    })
-    .catch(err => console.log(err))
+    });
 }
 
 function playTrack(track) {
+    oldTrack = currentTrack;
+    currentTrack = track;
     player.classList.remove('hidden')
-    updateCurrentlyPlaying(track, topBarSpan);
+    updateCurrentlyPlaying(track, topBarSpan, currentlyPlaying);
 
     audio.pause();
     audioInputRange.value = 0;
@@ -56,6 +67,7 @@ function playTrack(track) {
         updateTrackInterval && clearInterval(updateTrackInterval);
         updateTrackInterval = setInterval(() => {
             audioInputRange.value = audio.currentTime / duration;
+            audioCurrentPlaytimeSpan.textContent = `00:${audio.currentTime < 10 ? "0" : ""}${parseInt(audio.currentTime)}`
         }, 1000);
     })
 
@@ -65,11 +77,29 @@ function playTrack(track) {
 }
 
 audioInputRange.addEventListener('change', () => {
-    audio.currentTime = audioInputRange.value * audio.duration;
-    audio.play()
+    if(audio){
+        audio.currentTime = audioInputRange.value * audio.duration;
+        audio.play()
+    }
 })
 
+function playPause(){
+    if(!audio.src) return;
+    if(audio.paused){
+        audio.play();
+        currentlyPlaying.classList.add('active')
+        player.classList.remove("hidden")
+    }else{
+        audio.pause();
+        currentlyPlaying.classList.remove('active')
+        player.classList.add("hidden")
+    }
+}
 
+window.addEventListener('keydown', (e) => {
+    if(e.code == "Space") playPause();
+    else if(e.code == "Escape") menu.classList.toggle("active");
+})
 
 // const canvas = document.querySelector('canvas')
 // const ctx = canvas.getContext('2d');
