@@ -77,6 +77,8 @@ function onClick(event) {
       playPause();
     }else if(objectName == "Menu"){
       openMenu();
+    }else{
+      console.log(intersects);
     }
   }
 }

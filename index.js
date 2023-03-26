@@ -23,9 +23,13 @@ let data; //Tracks
 let currentTrack, oldTrack;
 var audioDuration;
 var updateTrackInterval;
+var inputSearchFocused = false;
 audio.crossOrigin = "anonymous";
 
 form.addEventListener('submit', onFormSubmit);
+
+form.elements.search.addEventListener('focus', () => inputSearchFocused = true);
+form.elements.search.addEventListener('blur', () => inputSearchFocused = false);
 
 document.querySelector('#menu button').addEventListener('click', () => menu.classList.remove("active"))
 
@@ -85,6 +89,7 @@ audioInputRange.addEventListener('change', () => {
 
 function playPause(){
     if(!audio.src) return;
+    if(inputSearchFocused) return;
     if(audio.paused){
         audio.play();
         currentlyPlaying.classList.add('active')
