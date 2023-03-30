@@ -21,6 +21,8 @@ body {
   position: absolute;
   inset: 0;
   z-index: -1;
+  filter: drop-shadow(2px 4px 20px black);
+  mix-blend-mode: overlay;
 }
 
 #bg {

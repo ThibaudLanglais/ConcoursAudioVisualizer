@@ -19,11 +19,11 @@ const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 const analyser = audioCtx.createAnalyser();
 analyser.connect(audioCtx.destination);
 analyser.fftSize = 512;
+let audio = new Audio();
+const audioSource = audioCtx.createMediaElementSource(audio);
 
 // Variables for audio
-var audioSource = null;
 var x = 0;
-let audio = new Audio();
 let data; //Tracks
 let currentTrack, oldTrack;
 var audioDuration;
@@ -71,7 +71,6 @@ function playTrack(track) {
     audio.currentTime = 0;
     audio.src = track.preview;
     audio.play()
-    audioSource = audioCtx.createMediaElementSource(audio);
     audioSource.connect(analyser);
 
     bufferLength = analyser.frequencyBinCount;
