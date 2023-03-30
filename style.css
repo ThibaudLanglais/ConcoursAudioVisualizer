@@ -17,6 +17,12 @@ body {
   --sec: #111;
 }
 
+#audio-frequencies{
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+
 #bg {
   position: fixed;
   inset: 0;

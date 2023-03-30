@@ -13,10 +13,15 @@ const audioCurrentPlaytimeSpan = document.getElementById('playing-time');
 const audioInputRange = document.getElementById('audio-track');
 const menu = document.getElementById('menu');
 const currentlyPlaying = document.querySelector('.currently-playing');
+const canvas = document.getElementById('audio-frequencies');
+const ctx = canvas.getContext('2d');
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+const analyser = audioCtx.createAnalyser();
+analyser.connect(audioCtx.destination);
+analyser.fftSize = 512;
 
 // Variables for audio
 var audioSource = null;
-var analyser = null;
 var x = 0;
 let audio = new Audio();
 let data; //Tracks
@@ -24,6 +29,7 @@ let currentTrack, oldTrack;
 var audioDuration;
 var updateTrackInterval;
 var inputSearchFocused = false;
+var bufferLength, dataArray, barWidth;
 audio.crossOrigin = "anonymous";
 
 form.addEventListener('submit', onFormSubmit);
@@ -55,6 +61,7 @@ function onFormSubmit(e) {
 
 function playTrack(track) {
     oldTrack = currentTrack;
+    if(currentTrack) currentTrack.next = track;
     currentTrack = track;
     player.classList.remove('hidden')
     updateCurrentlyPlaying(track, topBarSpan, currentlyPlaying);
@@ -64,7 +71,12 @@ function playTrack(track) {
     audio.currentTime = 0;
     audio.src = track.preview;
     audio.play()
-    
+    audioSource = audioCtx.createMediaElementSource(audio);
+    audioSource.connect(analyser);
+
+    bufferLength = analyser.frequencyBinCount;
+    dataArray = new Uint8Array(bufferLength);
+
     audio.addEventListener('loadedmetadata', (e) => {
         const duration = parseInt(audio.duration);
         audioDurationSpan.textContent = `${0}:${duration}`;
@@ -106,51 +118,35 @@ window.addEventListener('keydown', (e) => {
     else if(e.code == "Escape") menu.classList.toggle("active");
 })
 
-// const canvas = document.querySelector('canvas')
-// const ctx = canvas.getContext('2d');
-// const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function animate() {
+    if(audio && !audio.paused){
+        x = 0;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        analyser.getByteFrequencyData(dataArray);
+        drawVisualizer({
+            bufferLength,
+            dataArray
+        });
+    }
+    requestAnimationFrame(animate);
+}
 
-// audio.src = "playing_god.mp3";
-// audio.crossOrigin = "anonymous";
-// audio.src = "https://cdns-preview-6.dzcdn.net/stream/c-6978750774c28c04dab4b2ec88fe3d40-3.mp3";
-// audio.play()
-// audioSource = audioCtx.createMediaElementSource(audio);
-// analyser = audioCtx.createAnalyser();
-// audioSource.connect(analyser);
-// analyser.connect(audioCtx.destination);
-// analyser.fftSize = 512;
-// const bufferLength = analyser.frequencyBinCount;
-// const dataArray = new Uint8Array(bufferLength);
-// const barWidth = canvas.width / bufferLength;
+const drawVisualizer = ({
+    bufferLength,
+    dataArray
+}) => {
+    let barHeight;
+    for (let i = 0; i < bufferLength; i++) {
+        barHeight = dataArray[i];
+        barWidth = innerWidth / bufferLength / 2;
+        ctx.fillStyle = `rgb(${barHeight/256}, ${barHeight/256}, ${barHeight/256})`;
 
+        barHeight = (barHeight / 256) * innerHeight / 4;
 
-// function animate() {
-//     x = 0;
-//     ctx.clearRect(0, 0, canvas.width, canvas.height);
-//     analyser.getByteFrequencyData(dataArray);
-//     drawVisualizer({
-//         bufferLength,
-//         dataArray,
-//         barWidth
-//     });
-//     requestAnimationFrame(animate);
-// }
+        ctx.fillRect(innerWidth/2 + x, innerHeight/2 - barHeight, barWidth, 2 * barHeight);
+        ctx.fillRect(innerWidth/2 - x, innerHeight/2 - barHeight, barWidth, 2 * barHeight);
+        x += barWidth;
+    }
+};
 
-// const drawVisualizer = ({
-//     bufferLength,
-//     dataArray,
-//     barWidth
-// }) => {
-//     let barHeight;
-//     for (let i = 0; i < bufferLength; i++) {
-//         barHeight = dataArray[i];
-//         const red = (i * barHeight) / 10;
-//         const green = i * 4;
-//         const blue = barHeight / 4 - 12;
-//         ctx.fillStyle = `rgb(${red}, ${green}, ${blue})`;
-//         ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
-//         x += barWidth;
-//     }
-// };
-
-// animate()
+animate()
