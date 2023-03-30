@@ -17,6 +17,13 @@ body {
   --sec: #111;
 }
 
+body.deezer-loading #results{
+  display: none;
+}
+body.deezer-loading #loader{
+  display: flex;
+}
+
 #audio-frequencies{
   position: absolute;
   inset: 0;
@@ -81,7 +88,7 @@ h1 > span:last-child{
   color: var(--sec);
 }
 
-#results {
+#results, #loader {
   margin-top: 5px;
   display: flex;
   flex-direction: column;
@@ -89,6 +96,12 @@ h1 > span:last-child{
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
+}
+
+#loader{
+  display: none;
+  justify-content: center;
+  align-items: center;
 }
 
 .result {

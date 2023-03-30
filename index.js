@@ -45,6 +45,8 @@ function onFormSubmit(e) {
     const query = e.target.elements.search.value.replaceAll(spaceRegexp, "");
     if(query === "") return;
 
+    document.body.classList.add('deezer-loading')
+    
     DZ.api(`/search?q=${encodeURIComponent(query)}`, (res) => {
         data = filterByKeyValue(res.data, "type", "track");
         resultsDiv.innerHTML = "";
@@ -56,6 +58,7 @@ function onFormSubmit(e) {
             result.addEventListener('click', () => playTrack(track));
             resultsDiv.append(result);
         })
+        document.body.classList.remove('deezer-loading')
     });
 }
 
