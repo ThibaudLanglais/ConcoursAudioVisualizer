@@ -60,6 +60,7 @@ function onFormSubmit(e) {
 }
 
 function playTrack(track) {
+    audioCtx.resume();
     oldTrack = currentTrack;
     if(currentTrack) currentTrack.next = track;
     currentTrack = track;
