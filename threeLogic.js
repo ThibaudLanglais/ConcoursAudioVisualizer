@@ -68,14 +68,14 @@ function onClick(event) {
   var intersects = raycaster.intersectObjects(scene.children, true);
 
   if (intersects.length > 0) {
-    const objectName = intersects[0].object.userData?.name;
-    if(objectName == "Forward"){
-      playTrack(currentTrack.next);
-    }else if(objectName == "Backward"){
-      playTrack(oldTrack);
-    }else if(objectName == "PlayPause"){
+    const objectName = intersects[0].object.name ?? "";
+    if(objectName.includes("Forward")){
+      if(currentTrack && currentTrack.next) playTrack(currentTrack.next);
+    }else if(objectName.includes("Backward")){
+      if(oldTrack) playTrack(oldTrack);
+    }else if(objectName.includes("PlayPause")){
       playPause();
-    }else if(objectName == "Menu"){
+    }else if(objectName.includes("Menu")){
       openMenu();
     }
   }
